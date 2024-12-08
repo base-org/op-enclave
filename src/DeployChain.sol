@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
+import {ResolvingProxyFactory} from "./ResolvingProxyFactory.sol";
 import {Portal} from "./Portal.sol";
 import {OutputOracle} from "./OutputOracle.sol";
 import {SystemConfigOwnable} from "./SystemConfigOwnable.sol";
@@ -101,13 +102,13 @@ contract DeployChain {
     function deployAddresses(uint256 chainID) external view returns (DeployAddresses memory) {
         bytes32 salt = keccak256(abi.encodePacked(chainID));
         return DeployAddresses({
-            l2OutputOracle: proxyAddress(l2OutputOracle, salt),
-            systemConfig: proxyAddress(systemConfig, salt),
-            optimismPortal: proxyAddress(optimismPortal, salt),
-            l1CrossDomainMessenger: proxyAddress(l1CrossDomainMessenger, salt),
-            l1StandardBridge: proxyAddress(l1StandardBridge, salt),
-            l1ERC721Bridge: proxyAddress(l1ERC721Bridge, salt),
-            optimismMintableERC20Factory: proxyAddress(optimismMintableERC20Factory, salt)
+            l2OutputOracle: ResolvingProxyFactory.proxyAddress(l2OutputOracle, proxyAdmin, salt),
+            systemConfig: ResolvingProxyFactory.proxyAddress(systemConfig, proxyAdmin, salt),
+            optimismPortal: ResolvingProxyFactory.proxyAddress(optimismPortal, proxyAdmin, salt),
+            l1CrossDomainMessenger: ResolvingProxyFactory.proxyAddress(l1CrossDomainMessenger, proxyAdmin, salt),
+            l1StandardBridge: ResolvingProxyFactory.proxyAddress(l1StandardBridge, proxyAdmin, salt),
+            l1ERC721Bridge: ResolvingProxyFactory.proxyAddress(l1ERC721Bridge, proxyAdmin, salt),
+            optimismMintableERC20Factory: ResolvingProxyFactory.proxyAddress(optimismMintableERC20Factory, proxyAdmin, salt)
         });
     }
 
@@ -149,13 +150,13 @@ contract DeployChain {
     function setupProxies(uint256 chainID) internal returns (DeployAddresses memory) {
         bytes32 salt = keccak256(abi.encodePacked(chainID));
         return DeployAddresses({
-            l2OutputOracle: setupProxy(l2OutputOracle, salt),
-            systemConfig: setupProxy(systemConfig, salt),
-            optimismPortal: setupProxy(optimismPortal, salt),
-            l1CrossDomainMessenger: setupProxy(l1CrossDomainMessenger, salt),
-            l1StandardBridge: setupProxy(l1StandardBridge, salt),
-            l1ERC721Bridge: setupProxy(l1ERC721Bridge, salt),
-            optimismMintableERC20Factory: setupProxy(optimismMintableERC20Factory, salt)
+            l2OutputOracle: ResolvingProxyFactory.setupProxy(l2OutputOracle, proxyAdmin, salt),
+            systemConfig: ResolvingProxyFactory.setupProxy(systemConfig, proxyAdmin, salt),
+            optimismPortal: ResolvingProxyFactory.setupProxy(optimismPortal, proxyAdmin, salt),
+            l1CrossDomainMessenger: ResolvingProxyFactory.setupProxy(l1CrossDomainMessenger, proxyAdmin, salt),
+            l1StandardBridge: ResolvingProxyFactory.setupProxy(l1StandardBridge, proxyAdmin, salt),
+            l1ERC721Bridge: ResolvingProxyFactory.setupProxy(l1ERC721Bridge, proxyAdmin, salt),
+            optimismMintableERC20Factory: ResolvingProxyFactory.setupProxy(optimismMintableERC20Factory, proxyAdmin, salt)
         });
     }
 
@@ -263,40 +264,5 @@ contract DeployChain {
             optimismMintableERC20Factory: addresses.optimismMintableERC20Factory,
             gasPayingToken: gasToken
         });
-    }
-
-    function setupProxy(address proxy, bytes32 salt) internal returns (address instance) {
-        address _proxyAdmin = proxyAdmin;
-        /// @solidity memory-safe-assembly
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, 0x60678060095f395ff363204e1c7a60e01b5f5273000000000000000000000000)
-            mstore(add(ptr, 0x14), shl(0x60, proxy))
-            mstore(add(ptr, 0x28), 0x6004525f5f60245f730000000000000000000000000000000000000000000000)
-            mstore(add(ptr, 0x31), shl(0x60, _proxyAdmin))
-            mstore(add(ptr, 0x45), 0x5afa3d5f5f3e3d60201416604d573d5ffd5b5f5f365f5f51365f5f375af43d5f)
-            mstore(add(ptr, 0x65), 0x5f3e5f3d91606557fd5bf3000000000000000000000000000000000000000000)
-            instance := create2(0, ptr, 0x70, salt)
-        }
-        require(instance != address(0), "Proxy: create2 failed");
-    }
-
-    function proxyAddress(address proxy, bytes32 salt) internal view returns (address predicted) {
-        address _proxyAdmin = proxyAdmin;
-        address deployer = address(this);
-        /// @solidity memory-safe-assembly
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, 0x60678060095f395ff363204e1c7a60e01b5f5273000000000000000000000000)
-            mstore(add(ptr, 0x14), shl(0x60, proxy))
-            mstore(add(ptr, 0x28), 0x6004525f5f60245f730000000000000000000000000000000000000000000000)
-            mstore(add(ptr, 0x31), shl(0x60, _proxyAdmin))
-            mstore(add(ptr, 0x45), 0x5afa3d5f5f3e3d60201416604d573d5ffd5b5f5f365f5f51365f5f375af43d5f)
-            mstore(add(ptr, 0x65), 0x5f3e5f3d91606557fd5bf3ff0000000000000000000000000000000000000000)
-            mstore(add(ptr, 0x71), shl(0x60, deployer))
-            mstore(add(ptr, 0x85), salt)
-            mstore(add(ptr, 0xa5), keccak256(ptr, 0x70))
-            predicted := keccak256(add(ptr, 0x70), 0x55)
-        }
     }
 }
