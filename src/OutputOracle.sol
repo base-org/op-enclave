@@ -42,6 +42,9 @@ contract OutputOracle is Initializable, ISemver {
     /// @notice An array of L2 output proposals.
     Types.OutputProposal[] internal l2Outputs;
 
+    /// @notice Whether or not TEE proofs are enabled.
+    bool public proofsEnabled;
+
     /// @notice Pointer inside l2Outputs to the latest submitted output.
     uint256 public latestOutputIndex;
 
@@ -65,14 +68,16 @@ contract OutputOracle is Initializable, ISemver {
     constructor(SystemConfigGlobal _systemConfigGlobal, uint256 _maxOutputCount) {
         systemConfigGlobal = _systemConfigGlobal;
         maxOutputCount = _maxOutputCount;
-        initialize(SystemConfigOwnable(address(0)), 0, 0);
+        initialize(SystemConfigOwnable(address(0)), 0, 0, false);
     }
 
     /// @notice Initializer.
-    function initialize(SystemConfigOwnable _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot)
-        public
-        initializer
-    {
+    function initialize(
+        SystemConfigOwnable _systemConfig,
+        bytes32 _configHash,
+        bytes32 _genesisOutputRoot,
+        bool _proofsEnabled
+    ) public initializer {
         systemConfig = _systemConfig;
         configHash = _configHash;
         l2Outputs.push(
@@ -82,11 +87,19 @@ contract OutputOracle is Initializable, ISemver {
                 l2BlockNumber: uint128(0)
             })
         );
+        proofsEnabled = _proofsEnabled;
     }
 
+    /// @notice Returns the proposer address.
     function proposer() public view returns (address) {
         address _proposer = address(systemConfig) != address(0) ? systemConfig.proposer() : address(0);
         return _proposer != address(0) ? _proposer : systemConfigGlobal.proposer();
+    }
+
+    /// @notice Enables TEE proofs for output proposals. This is a one-way function.
+    function enableProofs() external {
+        require(msg.sender == proposer(), "OutputOracle: only the proposer address can enable proofs");
+        proofsEnabled = true;
     }
 
     /// @notice Accepts an outputRoot of the corresponding L2 block.
@@ -107,14 +120,16 @@ contract OutputOracle is Initializable, ISemver {
 
         require(_outputRoot != bytes32(0), "OutputOracle: L2 output proposal cannot be the zero hash");
 
-        bytes32 _blockHash = blockhash(_l1BlockNumber);
-        require(_blockHash != bytes32(0), "OutputOracle: blockhash not available");
+        if (proofsEnabled) {
+            bytes32 _blockHash = blockhash(_l1BlockNumber);
+            require(_blockHash != bytes32(0), "OutputOracle: blockhash not available");
 
-        bytes32 previousOutputRoot = l2Outputs[latestOutputIndex].outputRoot;
-        address signer = ECDSA.recover(
-            keccak256(abi.encodePacked(configHash, _blockHash, previousOutputRoot, _outputRoot)), _signature
-        );
-        require(systemConfigGlobal.validSigners(signer), "OutputOracle: invalid signature");
+            bytes32 previousOutputRoot = l2Outputs[latestOutputIndex].outputRoot;
+            address signer = ECDSA.recover(
+                keccak256(abi.encodePacked(configHash, _blockHash, previousOutputRoot, _outputRoot)), _signature
+            );
+            require(systemConfigGlobal.validSigners(signer), "OutputOracle: invalid signature");
+        }
 
         latestOutputIndex = nextOutputIndex();
         emit OutputProposed(_outputRoot, latestOutputIndex, _l2BlockNumber, block.timestamp);

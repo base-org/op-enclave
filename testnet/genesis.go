@@ -68,6 +68,11 @@ var (
 		Usage:   "Use a custom gas token",
 		EnvVars: []string{"CUSTOM_GAS_TOKEN"},
 	}
+	DisableProofsFlag = &cli.BoolFlag{
+		Name:    "disable-proofs",
+		Usage:   "Disable proofs",
+		EnvVars: []string{"DISABLE_PROOFS"},
+	}
 )
 
 var Flags = []cli.Flag{
@@ -77,6 +82,7 @@ var Flags = []cli.Flag{
 	ConfigPathFlag,
 	OutputPathFlag,
 	CustomGasTokenFlag,
+	DisableProofsFlag,
 }
 
 type Config struct {
@@ -142,6 +148,7 @@ func Main(cliCtx *cli.Context) error {
 	configPath := cliCtx.Path(ConfigPathFlag.Name)
 	outputPath := cliCtx.Path(OutputPathFlag.Name)
 	customGasToken := cliCtx.String(CustomGasTokenFlag.Name)
+	disableProofs := cliCtx.Bool(DisableProofsFlag.Name)
 
 	err := os.MkdirAll(outputPath, 0755)
 	if err != nil {
@@ -422,6 +429,7 @@ func Main(cliCtx *cli.Context) error {
 		genesisCfg,
 		gasConfig,
 		addressConfig,
+		!disableProofs,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to deploy proxies: %w", err)

@@ -313,7 +313,7 @@ contract DeploySystem is Deploy {
         _upgradeAndCallViaSafe({
             _proxy: payable(l2OutputOracleProxy),
             _implementation: l2OutputOracle,
-            _innerCallData: abi.encodeCall(OutputOracle.initialize, (SystemConfigOwnable(systemConfigProxy), 0, 0))
+            _innerCallData: abi.encodeCall(OutputOracle.initialize, (SystemConfigOwnable(systemConfigProxy), 0, 0, false))
         });
 
         OutputOracle oracle = OutputOracle(l2OutputOracleProxy);

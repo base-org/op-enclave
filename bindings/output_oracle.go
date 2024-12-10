@@ -38,7 +38,7 @@ type TypesOutputProposal struct {
 
 // OutputOracleMetaData contains all meta data concerning the OutputOracle contract.
 var OutputOracleMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"constructor\",\"inputs\":[{\"name\":\"_systemConfigGlobal\",\"type\":\"address\",\"internalType\":\"contractSystemConfigGlobal\"},{\"name\":\"_maxOutputCount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"configHash\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getL2Output\",\"inputs\":[{\"name\":\"_l2OutputIndex\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structTypes.OutputProposal\",\"components\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"timestamp\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getL2OutputAfter\",\"inputs\":[{\"name\":\"_l2BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structTypes.OutputProposal\",\"components\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"timestamp\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getL2OutputIndexAfter\",\"inputs\":[{\"name\":\"_l2BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"initialize\",\"inputs\":[{\"name\":\"_systemConfig\",\"type\":\"address\",\"internalType\":\"contractSystemConfigOwnable\"},{\"name\":\"_configHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_genesisOutputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"latestBlockNumber\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"latestL2Output\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structTypes.OutputProposal\",\"components\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"timestamp\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"latestOutputIndex\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"maxOutputCount\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"nextOutputIndex\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"proposeL2Output\",\"inputs\":[{\"name\":\"_outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_l2BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_l1BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"proposer\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"systemConfig\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"contractSystemConfigOwnable\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"systemConfigGlobal\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"contractSystemConfigGlobal\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"version\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"view\"},{\"type\":\"event\",\"name\":\"Initialized\",\"inputs\":[{\"name\":\"version\",\"type\":\"uint8\",\"indexed\":false,\"internalType\":\"uint8\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OutputProposed\",\"inputs\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"},{\"name\":\"l2OutputIndex\",\"type\":\"uint256\",\"indexed\":true,\"internalType\":\"uint256\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint256\",\"indexed\":true,\"internalType\":\"uint256\"},{\"name\":\"l1Timestamp\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false}]",
+	ABI: "[{\"type\":\"constructor\",\"inputs\":[{\"name\":\"_systemConfigGlobal\",\"type\":\"address\",\"internalType\":\"contractSystemConfigGlobal\"},{\"name\":\"_maxOutputCount\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"configHash\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"enableProofs\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"getL2Output\",\"inputs\":[{\"name\":\"_l2OutputIndex\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structTypes.OutputProposal\",\"components\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"timestamp\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getL2OutputAfter\",\"inputs\":[{\"name\":\"_l2BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structTypes.OutputProposal\",\"components\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"timestamp\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getL2OutputIndexAfter\",\"inputs\":[{\"name\":\"_l2BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"initialize\",\"inputs\":[{\"name\":\"_systemConfig\",\"type\":\"address\",\"internalType\":\"contractSystemConfigOwnable\"},{\"name\":\"_configHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_genesisOutputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_proofsEnabled\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"latestBlockNumber\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"latestL2Output\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"tuple\",\"internalType\":\"structTypes.OutputProposal\",\"components\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"timestamp\",\"type\":\"uint128\",\"internalType\":\"uint128\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint128\",\"internalType\":\"uint128\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"latestOutputIndex\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"maxOutputCount\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"nextOutputIndex\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"proofsEnabled\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"proposeL2Output\",\"inputs\":[{\"name\":\"_outputRoot\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"},{\"name\":\"_l2BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_l1BlockNumber\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"_signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"proposer\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"systemConfig\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"contractSystemConfigOwnable\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"systemConfigGlobal\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"address\",\"internalType\":\"contractSystemConfigGlobal\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"version\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"view\"},{\"type\":\"event\",\"name\":\"Initialized\",\"inputs\":[{\"name\":\"version\",\"type\":\"uint8\",\"indexed\":false,\"internalType\":\"uint8\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OutputProposed\",\"inputs\":[{\"name\":\"outputRoot\",\"type\":\"bytes32\",\"indexed\":true,\"internalType\":\"bytes32\"},{\"name\":\"l2OutputIndex\",\"type\":\"uint256\",\"indexed\":true,\"internalType\":\"uint256\"},{\"name\":\"l2BlockNumber\",\"type\":\"uint256\",\"indexed\":true,\"internalType\":\"uint256\"},{\"name\":\"l1Timestamp\",\"type\":\"uint256\",\"indexed\":false,\"internalType\":\"uint256\"}],\"anonymous\":false}]",
 }
 
 // OutputOracleABI is the input ABI used to generate the binding from.
@@ -466,6 +466,37 @@ func (_OutputOracle *OutputOracleCallerSession) NextOutputIndex() (*big.Int, err
 	return _OutputOracle.Contract.NextOutputIndex(&_OutputOracle.CallOpts)
 }
 
+// ProofsEnabled is a free data retrieval call binding the contract method 0x25f88172.
+//
+// Solidity: function proofsEnabled() view returns(bool)
+func (_OutputOracle *OutputOracleCaller) ProofsEnabled(opts *bind.CallOpts) (bool, error) {
+	var out []interface{}
+	err := _OutputOracle.contract.Call(opts, &out, "proofsEnabled")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// ProofsEnabled is a free data retrieval call binding the contract method 0x25f88172.
+//
+// Solidity: function proofsEnabled() view returns(bool)
+func (_OutputOracle *OutputOracleSession) ProofsEnabled() (bool, error) {
+	return _OutputOracle.Contract.ProofsEnabled(&_OutputOracle.CallOpts)
+}
+
+// ProofsEnabled is a free data retrieval call binding the contract method 0x25f88172.
+//
+// Solidity: function proofsEnabled() view returns(bool)
+func (_OutputOracle *OutputOracleCallerSession) ProofsEnabled() (bool, error) {
+	return _OutputOracle.Contract.ProofsEnabled(&_OutputOracle.CallOpts)
+}
+
 // Proposer is a free data retrieval call binding the contract method 0xa8e4fb90.
 //
 // Solidity: function proposer() view returns(address)
@@ -590,25 +621,46 @@ func (_OutputOracle *OutputOracleCallerSession) Version() (string, error) {
 	return _OutputOracle.Contract.Version(&_OutputOracle.CallOpts)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0x85f812c3.
+// EnableProofs is a paid mutator transaction binding the contract method 0x60df09b2.
 //
-// Solidity: function initialize(address _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot) returns()
-func (_OutputOracle *OutputOracleTransactor) Initialize(opts *bind.TransactOpts, _systemConfig common.Address, _configHash [32]byte, _genesisOutputRoot [32]byte) (*types.Transaction, error) {
-	return _OutputOracle.contract.Transact(opts, "initialize", _systemConfig, _configHash, _genesisOutputRoot)
+// Solidity: function enableProofs() returns()
+func (_OutputOracle *OutputOracleTransactor) EnableProofs(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _OutputOracle.contract.Transact(opts, "enableProofs")
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0x85f812c3.
+// EnableProofs is a paid mutator transaction binding the contract method 0x60df09b2.
 //
-// Solidity: function initialize(address _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot) returns()
-func (_OutputOracle *OutputOracleSession) Initialize(_systemConfig common.Address, _configHash [32]byte, _genesisOutputRoot [32]byte) (*types.Transaction, error) {
-	return _OutputOracle.Contract.Initialize(&_OutputOracle.TransactOpts, _systemConfig, _configHash, _genesisOutputRoot)
+// Solidity: function enableProofs() returns()
+func (_OutputOracle *OutputOracleSession) EnableProofs() (*types.Transaction, error) {
+	return _OutputOracle.Contract.EnableProofs(&_OutputOracle.TransactOpts)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0x85f812c3.
+// EnableProofs is a paid mutator transaction binding the contract method 0x60df09b2.
 //
-// Solidity: function initialize(address _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot) returns()
-func (_OutputOracle *OutputOracleTransactorSession) Initialize(_systemConfig common.Address, _configHash [32]byte, _genesisOutputRoot [32]byte) (*types.Transaction, error) {
-	return _OutputOracle.Contract.Initialize(&_OutputOracle.TransactOpts, _systemConfig, _configHash, _genesisOutputRoot)
+// Solidity: function enableProofs() returns()
+func (_OutputOracle *OutputOracleTransactorSession) EnableProofs() (*types.Transaction, error) {
+	return _OutputOracle.Contract.EnableProofs(&_OutputOracle.TransactOpts)
+}
+
+// Initialize is a paid mutator transaction binding the contract method 0xb8205148.
+//
+// Solidity: function initialize(address _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot, bool _proofsEnabled) returns()
+func (_OutputOracle *OutputOracleTransactor) Initialize(opts *bind.TransactOpts, _systemConfig common.Address, _configHash [32]byte, _genesisOutputRoot [32]byte, _proofsEnabled bool) (*types.Transaction, error) {
+	return _OutputOracle.contract.Transact(opts, "initialize", _systemConfig, _configHash, _genesisOutputRoot, _proofsEnabled)
+}
+
+// Initialize is a paid mutator transaction binding the contract method 0xb8205148.
+//
+// Solidity: function initialize(address _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot, bool _proofsEnabled) returns()
+func (_OutputOracle *OutputOracleSession) Initialize(_systemConfig common.Address, _configHash [32]byte, _genesisOutputRoot [32]byte, _proofsEnabled bool) (*types.Transaction, error) {
+	return _OutputOracle.Contract.Initialize(&_OutputOracle.TransactOpts, _systemConfig, _configHash, _genesisOutputRoot, _proofsEnabled)
+}
+
+// Initialize is a paid mutator transaction binding the contract method 0xb8205148.
+//
+// Solidity: function initialize(address _systemConfig, bytes32 _configHash, bytes32 _genesisOutputRoot, bool _proofsEnabled) returns()
+func (_OutputOracle *OutputOracleTransactorSession) Initialize(_systemConfig common.Address, _configHash [32]byte, _genesisOutputRoot [32]byte, _proofsEnabled bool) (*types.Transaction, error) {
+	return _OutputOracle.Contract.Initialize(&_OutputOracle.TransactOpts, _systemConfig, _configHash, _genesisOutputRoot, _proofsEnabled)
 }
 
 // ProposeL2Output is a paid mutator transaction binding the contract method 0x9ad84880.

@@ -116,7 +116,8 @@ contract DeployChain {
         uint256 chainID,
         GenesisConfiguration memory genesisConfig,
         GasConfiguration memory gasConfig,
-        AddressConfiguration memory addressConfig
+        AddressConfiguration memory addressConfig,
+        bool proofsEnabled
     ) external {
         DeployAddresses memory addresses = setupProxies(chainID);
 
@@ -124,7 +125,7 @@ contract DeployChain {
 
         address batchInbox = calculateBatchInbox(chainID);
 
-        initializeProxies(gasConfig, addressConfig, batchInbox, hashes, addresses);
+        initializeProxies(gasConfig, addressConfig, batchInbox, hashes, addresses, proofsEnabled);
 
         emit Deploy({
             chainID: chainID,
@@ -205,10 +206,11 @@ contract DeployChain {
         AddressConfiguration memory addressConfig,
         address batchInbox,
         Hashes memory hashes,
-        DeployAddresses memory addresses
+        DeployAddresses memory addresses,
+        bool proofsEnabled
     ) internal {
         OutputOracle(addresses.l2OutputOracle).initialize(
-            SystemConfigOwnable(addresses.systemConfig), hashes.configHash, hashes.genesisOutputRoot
+            SystemConfigOwnable(addresses.systemConfig), hashes.configHash, hashes.genesisOutputRoot, proofsEnabled
         );
 
         Portal(payable(addresses.optimismPortal)).initialize(
