@@ -5,6 +5,7 @@ import {ResolvingProxyFactory} from "./ResolvingProxyFactory.sol";
 import {Portal} from "./Portal.sol";
 import {OutputOracle} from "./OutputOracle.sol";
 import {SystemConfigOwnable} from "./SystemConfigOwnable.sol";
+import {ResolvingProxy} from "./ResolvingProxy.sol";
 import {SystemConfig} from "@eth-optimism-bedrock/src/L1/SystemConfig.sol";
 import {ISystemConfig} from "@eth-optimism-bedrock/src/L1/interfaces/ISystemConfig.sol";
 import {OptimismPortal} from "@eth-optimism-bedrock/src/L1/OptimismPortal.sol";
@@ -20,6 +21,10 @@ import {ResourceMetering} from "@eth-optimism-bedrock/src/L1/ResourceMetering.so
 import {Hashing} from "@eth-optimism-bedrock/src/libraries/Hashing.sol";
 import {Types} from "@eth-optimism-bedrock/src/libraries/Types.sol";
 import {Constants} from "@eth-optimism-bedrock/src/libraries/Constants.sol";
+
+interface IProxyAdmin {
+    function getProxyImplementation(address) external view returns (address);
+}
 
 contract DeployChain {
     struct DeployAddresses {
@@ -100,20 +105,20 @@ contract DeployChain {
     }
 
     function deployAddresses(uint256 chainID) external view returns (DeployAddresses memory) {
-        bytes32 salt = keccak256(abi.encodePacked(chainID));
         return DeployAddresses({
-            l2OutputOracle: proxyAddress(l2OutputOracle, salt),
-            systemConfig: proxyAddress(systemConfig, salt),
-            optimismPortal: proxyAddress(optimismPortal, salt),
-            l1CrossDomainMessenger: proxyAddress(l1CrossDomainMessenger, salt),
-            l1StandardBridge: proxyAddress(l1StandardBridge, salt),
-            l1ERC721Bridge: proxyAddress(l1ERC721Bridge, salt),
-            optimismMintableERC20Factory: proxyAddress(optimismMintableERC20Factory, salt)
+            l2OutputOracle: proxyAddress(chainID, l2OutputOracle),
+            systemConfig: proxyAddress(chainID, systemConfig),
+            optimismPortal: proxyAddress(chainID, optimismPortal),
+            l1CrossDomainMessenger: proxyAddress(chainID, l1CrossDomainMessenger),
+            l1StandardBridge: proxyAddress(chainID, l1StandardBridge),
+            l1ERC721Bridge: proxyAddress(chainID, l1ERC721Bridge),
+            optimismMintableERC20Factory: proxyAddress(chainID, optimismMintableERC20Factory)
         });
     }
 
-    function proxyAddress(address proxy, bytes32 salt) public view returns (address) {
-        return ResolvingProxyFactory.proxyAddress(proxy, proxyAdmin, salt);
+    function proxyAddress(uint256 chainID, address implementation) public view returns (address) {
+        bytes32 salt = keccak256(abi.encodePacked(chainID, implementation));
+        return ResolvingProxyFactory.proxyAddress(proxyAdmin, salt);
     }
 
     function deploy(
@@ -153,20 +158,20 @@ contract DeployChain {
     }
 
     function setupProxies(uint256 chainID) internal returns (DeployAddresses memory) {
-        bytes32 salt = keccak256(abi.encodePacked(chainID));
         return DeployAddresses({
-            l2OutputOracle: deployProxy(l2OutputOracle, salt),
-            systemConfig: deployProxy(systemConfig, salt),
-            optimismPortal: deployProxy(optimismPortal, salt),
-            l1CrossDomainMessenger: deployProxy(l1CrossDomainMessenger, salt),
-            l1StandardBridge: deployProxy(l1StandardBridge, salt),
-            l1ERC721Bridge: deployProxy(l1ERC721Bridge, salt),
-            optimismMintableERC20Factory: deployProxy(optimismMintableERC20Factory, salt)
+            l2OutputOracle: deployProxy(chainID, l2OutputOracle),
+            systemConfig: deployProxy(chainID, systemConfig),
+            optimismPortal: deployProxy(chainID, optimismPortal),
+            l1CrossDomainMessenger: deployProxy(chainID, l1CrossDomainMessenger),
+            l1StandardBridge: deployProxy(chainID, l1StandardBridge),
+            l1ERC721Bridge: deployProxy(chainID, l1ERC721Bridge),
+            optimismMintableERC20Factory: deployProxy(chainID, optimismMintableERC20Factory)
         });
     }
 
-    function deployProxy(address proxy, bytes32 salt) public returns (address) {
-        return ResolvingProxyFactory.setupProxy(proxy, proxyAdmin, salt);
+    function deployProxy(uint256 chainID, address implementation) public returns (address) {
+        bytes32 salt = keccak256(abi.encodePacked(chainID, implementation));
+        return ResolvingProxyFactory.setupProxy(proxyAdmin, salt);
     }
 
     function calculateHashes(
@@ -217,47 +222,66 @@ contract DeployChain {
         DeployAddresses memory addresses,
         bool proofsEnabled
     ) internal {
-        OutputOracle(addresses.l2OutputOracle).initialize(
-            SystemConfigOwnable(addresses.systemConfig), hashes.configHash, hashes.genesisOutputRoot, proofsEnabled
-        );
+        _upgradeInitializeAndTransferProxyOwnership(addresses.l2OutputOracle, l2OutputOracle, abi.encodeCall(OutputOracle.initialize, (
+            SystemConfigOwnable(addresses.systemConfig),
+            hashes.configHash,
+            hashes.genesisOutputRoot,
+            proofsEnabled
+        )));
 
-        Portal(payable(addresses.optimismPortal)).initialize(
+        _upgradeInitializeAndTransferProxyOwnership(addresses.optimismPortal, optimismPortal, abi.encodeCall(Portal.initialize, (
             OutputOracle(addresses.l2OutputOracle),
             ISystemConfig(addresses.systemConfig),
             ISuperchainConfig(superchainConfig)
-        );
+        )));
 
         SystemConfig.Addresses memory systemAddresses = _createSystemAddresses(addresses, gasConfig.gasToken);
 
-        SystemConfigOwnable(addresses.systemConfig).initialize({
-            _basefeeScalar: gasConfig.basefeeScalar,
-            _blobbasefeeScalar: gasConfig.blobbasefeeScalar,
-            _batcherHash: bytes32(uint256(uint160(addressConfig.batcher))),
-            _gasLimit: gasConfig.gasLimit,
-            _unsafeBlockSigner: addressConfig.unsafeBlockSigner,
-            _config: Constants.DEFAULT_RESOURCE_CONFIG(),
-            _batchInbox: batchInbox,
-            _proposer: addressConfig.proposer,
-            _addresses: systemAddresses
-        });
+        _upgradeInitializeAndTransferProxyOwnership(addresses.systemConfig, systemConfig, abi.encodeCall(SystemConfigOwnable.initialize, (
+            gasConfig.basefeeScalar,
+            gasConfig.blobbasefeeScalar,
+            bytes32(uint256(uint160(addressConfig.batcher))),
+            gasConfig.gasLimit,
+            addressConfig.unsafeBlockSigner,
+            Constants.DEFAULT_RESOURCE_CONFIG(),
+            batchInbox,
+            addressConfig.proposer,
+            systemAddresses
+        )));
 
-        L1CrossDomainMessenger(addresses.l1CrossDomainMessenger).initialize(
+        _upgradeInitializeAndTransferProxyOwnership(addresses.l1CrossDomainMessenger, l1CrossDomainMessenger, abi.encodeCall(L1CrossDomainMessenger.initialize, (
             ISuperchainConfig(superchainConfig),
             IOptimismPortal(payable(addresses.optimismPortal)),
             ISystemConfig(addresses.systemConfig)
-        );
+        )));
 
-        L1StandardBridge(payable(addresses.l1StandardBridge)).initialize(
+        _upgradeInitializeAndTransferProxyOwnership(addresses.l1StandardBridge, l1StandardBridge, abi.encodeCall(L1StandardBridge.initialize, (
             ICrossDomainMessenger(addresses.l1CrossDomainMessenger),
             ISuperchainConfig(superchainConfig),
             ISystemConfig(addresses.systemConfig)
-        );
+        )));
 
-        L1ERC721Bridge(addresses.l1ERC721Bridge).initialize(
-            ICrossDomainMessenger(addresses.l1CrossDomainMessenger), ISuperchainConfig(superchainConfig)
-        );
+        _upgradeInitializeAndTransferProxyOwnership(addresses.l1ERC721Bridge, l1ERC721Bridge, abi.encodeCall(L1ERC721Bridge.initialize, (
+            ICrossDomainMessenger(addresses.l1CrossDomainMessenger),
+            ISuperchainConfig(superchainConfig)
+        )));
 
-        OptimismMintableERC20Factory(addresses.optimismMintableERC20Factory).initialize(addresses.l1StandardBridge);
+        _upgradeInitializeAndTransferProxyOwnership(addresses.optimismMintableERC20Factory, optimismMintableERC20Factory, abi.encodeCall(OptimismMintableERC20Factory.initialize, (
+            addresses.l1StandardBridge
+        )));
+    }
+
+    function _upgradeInitializeAndTransferProxyOwnership(
+        address _proxy,
+        address _implementation,
+        bytes memory _data
+    ) private {
+        ResolvingProxy proxy = ResolvingProxy(payable(_proxy));
+        address actual = IProxyAdmin(proxyAdmin).getProxyImplementation(_implementation);
+        require(actual != address(0), "DeployChain: invalid implementation");
+        proxy.upgradeToAndCall(actual, _data);
+        proxy.upgradeTo(_implementation);
+        proxy.changeAdmin(proxyAdmin);
     }
 
     function _createSystemAddresses(DeployAddresses memory addresses, address gasToken)

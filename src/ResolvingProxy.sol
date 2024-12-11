@@ -43,8 +43,7 @@ contract ResolvingProxy {
     ///         implementation is not possible.
     /// @param _admin Address of the initial contract admin. Admin has the ability to access the
     ///               transparent proxy interface.
-    constructor(address _implementation, address _admin) {
-        _setImplementation(_implementation);
+    constructor(address _admin) {
         _setAdmin(_admin);
     }
 
@@ -145,6 +144,7 @@ contract ResolvingProxy {
 
     function _resolveImplementation() internal view returns (address) {
         address proxy = _getImplementation();
+        require(proxy != address(0));
         bytes memory data = abi.encodeCall(IResolver.getProxyImplementation, (proxy));
         (bool success, bytes memory returndata) = _getAdmin().staticcall(data);
         if (success && returndata.length == 0x20) {

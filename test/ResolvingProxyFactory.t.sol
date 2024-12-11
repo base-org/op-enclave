@@ -40,7 +40,8 @@ contract ResolvingProxyFactoryTest is Test {
         admin = new ProxyAdmin(address(this));
         proxy = new Proxy(address(admin));
         admin.upgrade(payable(address(proxy)), address(implementation1));
-        resolvingProxy = ResolvingProxyFactory.setupProxy(address(proxy), address(admin), 0x00);
+        resolvingProxy = ResolvingProxyFactory.setupProxy(address(admin), 0x00);
+        admin.upgrade(payable(address(resolvingProxy)), address(proxy));
         Implementation1(resolvingProxy).set("world");
     }
 
@@ -86,7 +87,7 @@ contract ResolvingProxyFactoryTest is Test {
     }
 
     function test_proxyAddress() public view {
-        address predicted = ResolvingProxyFactory.proxyAddress(address(proxy), address(admin), 0x00);
+        address predicted = ResolvingProxyFactory.proxyAddress(address(admin), 0x00);
         assertEq(predicted, resolvingProxy);
     }
 }
