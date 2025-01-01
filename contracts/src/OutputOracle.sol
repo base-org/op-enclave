@@ -126,7 +126,8 @@ contract OutputOracle is Initializable, ISemver {
 
             bytes32 previousOutputRoot = l2Outputs[latestOutputIndex].outputRoot;
             address signer = ECDSA.recover(
-                keccak256(abi.encodePacked(configHash, _blockHash, previousOutputRoot, _outputRoot)), _signature
+                keccak256(abi.encodePacked(configHash, _blockHash, _l2BlockNumber, previousOutputRoot, _outputRoot)),
+                _signature
             );
             require(systemConfigGlobal.validSigners(signer), "OutputOracle: invalid signature");
         }

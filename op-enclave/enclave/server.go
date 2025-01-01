@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/big"
 	"os"
 	"time"
 
@@ -230,9 +231,10 @@ func (s *Server) SetSignerKey(ctx context.Context, encrypted hexutil.Bytes) erro
 }
 
 type Proposal struct {
-	OutputRoot   common.Hash
-	Signature    hexutil.Bytes
-	L1OriginHash common.Hash
+	OutputRoot    common.Hash
+	Signature     hexutil.Bytes
+	L1OriginHash  common.Hash
+	L2BlockNumber *hexutil.Big
 }
 
 func (s *Server) ExecuteStateless(
@@ -266,8 +268,10 @@ func (s *Server) ExecuteStateless(
 	prevOutputRoot := outputRootV0(previousBlockHeader, prevMessageAccountHash)
 	outputRoot := outputRootV0(blockHeader, messageAccount.StorageHash)
 	configHash := config.Hash()
+	l2BlockNumber := common.BytesToHash(blockHeader.Number.Bytes())
 
 	data := append(configHash[:], l1OriginHash[:]...)
+	data = append(data, l2BlockNumber[:]...)
 	data = append(data, prevOutputRoot[:]...)
 	data = append(data, outputRoot[:]...)
 	sig, err := crypto.Sign(crypto.Keccak256(data), s.signerKey)
@@ -279,9 +283,10 @@ func (s *Server) ExecuteStateless(
 		return nil, err
 	}
 	return &Proposal{
-		OutputRoot:   outputRoot,
-		Signature:    sig,
-		L1OriginHash: l1OriginHash,
+		OutputRoot:    outputRoot,
+		Signature:     sig,
+		L1OriginHash:  l1OriginHash,
+		L2BlockNumber: (*hexutil.Big)(blockHeader.Number),
 	}, nil
 }
 
@@ -295,9 +300,12 @@ func (s *Server) Aggregate(ctx context.Context, configHash common.Hash, prevOutp
 
 	outputRoot := prevOutputRoot
 	var l1OriginHash common.Hash
+	var l2BlockNumber common.Hash
 	for _, p := range proposals {
 		l1OriginHash = p.L1OriginHash
+		l2BlockNumber = common.BytesToHash(p.L2BlockNumber.ToInt().Bytes())
 		data := append(configHash[:], l1OriginHash[:]...)
+		data = append(data, l2BlockNumber[:]...)
 		data = append(data, outputRoot[:]...)
 		data = append(data, p.OutputRoot[:]...)
 		if !crypto.VerifySignature(crypto.FromECDSAPub(&s.signerKey.PublicKey), crypto.Keccak256(data), p.Signature[:64]) {
@@ -307,6 +315,7 @@ func (s *Server) Aggregate(ctx context.Context, configHash common.Hash, prevOutp
 	}
 
 	data := append(configHash[:], l1OriginHash[:]...)
+	data = append(data, l2BlockNumber[:]...)
 	data = append(data, prevOutputRoot[:]...)
 	data = append(data, outputRoot[:]...)
 	sig, err := crypto.Sign(crypto.Keccak256(data), s.signerKey)
@@ -315,9 +324,10 @@ func (s *Server) Aggregate(ctx context.Context, configHash common.Hash, prevOutp
 	}
 
 	return &Proposal{
-		OutputRoot:   outputRoot,
-		Signature:    sig,
-		L1OriginHash: l1OriginHash,
+		OutputRoot:    outputRoot,
+		Signature:     sig,
+		L1OriginHash:  l1OriginHash,
+		L2BlockNumber: (*hexutil.Big)(new(big.Int).SetBytes(l2BlockNumber[:])),
 	}, nil
 }
 
