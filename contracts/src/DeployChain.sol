@@ -87,6 +87,16 @@ contract DeployChain {
         address _superchainConfig,
         address _protocolVersions
     ) {
+        require(_proxyAdmin != address(0));
+        require(_optimismPortal != address(0));
+        require(_systemConfig != address(0));
+        require(_l1StandardBridge != address(0));
+        require(_l1ERC721Bridge != address(0));
+        require(_optimismMintableERC20Factory != address(0));
+        require(_l1CrossDomainMessenger != address(0));
+        require(_l2OutputOracle != address(0));
+        require(_superchainConfig != address(0));
+        require(_protocolVersions != address(0));
         proxyAdmin = _proxyAdmin;
         optimismPortal = _optimismPortal;
         systemConfig = _systemConfig;
