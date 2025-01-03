@@ -58,8 +58,8 @@ contract OutputOracle is Initializable, ISemver {
     );
 
     /// @notice Semantic version.
-    /// @custom:semver 1.8.1-beta.1
-    string public constant version = "1.8.1-beta.1";
+    /// @custom:semver 1.0.0
+    string public constant version = "1.0.0";
 
     /// @notice Constructs the OutputOracle contract. Initializes variables to the same values as
     ///         in the getting-started config.
