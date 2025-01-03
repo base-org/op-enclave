@@ -276,18 +276,6 @@ contract Portal is Initializable, ResourceMetering, ISemver {
         // a defacto reentrancy guard.
         if (l2Sender != Constants.DEFAULT_L2_SENDER) revert NonReentrant();
 
-        // Grab the OutputProposal from the L2OutputOracle, will revert if the output that
-        // corresponds to the given index has not been proposed yet.
-        Types.OutputProposal memory proposal = l2Oracle.getL2Output(_l2OutputIndex);
-
-        // Check that the output root that was used to prove the withdrawal is the same as the
-        // current output root for the given output index. An output root may change if it is
-        // deleted by the challenger address and then re-proposed.
-        require(
-            proposal.outputRoot == outputRoot,
-            "OptimismPortal: output root proven is not the same as current output root"
-        );
-
         // Check that this withdrawal has not already been finalized, this is replay protection.
         require(finalizedWithdrawals[withdrawalHash] == false, "OptimismPortal: withdrawal has already been finalized");
 
