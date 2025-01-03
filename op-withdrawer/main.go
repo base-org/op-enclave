@@ -189,12 +189,14 @@ func DepositHash(cliCtx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	if len(deposits) != 1 {
-		return fmt.Errorf("expected 1 deposit, got %d", len(deposits))
+	if len(deposits) == 0 {
+		return fmt.Errorf("no deposits found")
 	}
 
-	hash := types.NewTx(deposits[0]).Hash()
-	fmt.Println(hash.Hex())
+	// a single tx can contain multiple deposits; print them all
+	for _, deposit := range deposits {
+		fmt.Println(types.NewTx(deposit).Hash().Hex())
+	}
 
 	return nil
 }
