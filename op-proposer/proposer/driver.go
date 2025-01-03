@@ -188,13 +188,6 @@ func l2BlockRefToBlockID(ref eth.L2BlockRef) eth.BlockID {
 	}
 }
 
-func headerToBlockID(header *types.Header) eth.BlockID {
-	return eth.BlockID{
-		Number: header.Number.Uint64(),
-		Hash:   header.Hash(),
-	}
-}
-
 // loop is responsible for creating & submitting the next outputs
 // The loop regularly polls the L2 chain to infer whether to make the next proposal.
 func (l *L2OutputSubmitter) loop() {
