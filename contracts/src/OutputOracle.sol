@@ -156,6 +156,12 @@ contract OutputOracle is Initializable, ISemver {
     /// @notice Returns the index of the L2 output that checkpoints a given L2 block number.
     ///         Uses a binary search to find the first output greater than or equal to the given
     ///         block.
+    ///         This is provided for backwards compatibility with the op-stack. However, because
+    ///         this contract is modified to only store a fixed number of outputs, it is recommended
+    ///         to use the `latestOutputIndex` rather than the index returned from this function,
+    ///         as it will stay valid for longer.
+    ///         If your withdrawal is old, the output at the index selected by this function may be
+    ///         overwritten by the next proposal.
     /// @param _l2BlockNumber L2 block number to find a checkpoint for.
     /// @return Index of the first checkpoint that commits to the given L2 block number.
     function getL2OutputIndexAfter(uint256 _l2BlockNumber) public view returns (uint256) {
@@ -165,24 +171,20 @@ contract OutputOracle is Initializable, ISemver {
             "L2OutputOracle: cannot get output for a block that has not been proposed"
         );
 
-        // Make sure there's at least one output proposed.
-        require(l2Outputs.length > 0, "L2OutputOracle: cannot get output as no outputs have been proposed yet");
-
         // Find the output via binary search, guaranteed to exist.
-        uint256 lo = 0;
-        uint256 hi = l2Outputs.length;
-        uint256 offset = latestOutputIndex + 1 % l2Outputs.length;
+        uint256 offset = nextOutputIndex();
+        uint256 lo = offset;
+        uint256 hi = offset + l2Outputs.length;
         while (lo < hi) {
             uint256 mid = (lo + hi) / 2;
-            uint256 m = (mid + offset) % l2Outputs.length;
-            if (l2Outputs[m].l2BlockNumber < _l2BlockNumber) {
+            if (l2Outputs[mid % l2Outputs.length].l2BlockNumber < _l2BlockNumber) {
                 lo = mid + 1;
             } else {
                 hi = mid;
             }
         }
 
-        return lo;
+        return lo % l2Outputs.length;
     }
 
     /// @notice Returns the L2 output proposal that checkpoints a given L2 block number.
