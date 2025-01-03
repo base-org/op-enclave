@@ -108,7 +108,7 @@ func NewServer() (*Server, error) {
 		random = session
 	}
 
-	decryptionKey, err := rsa.GenerateKey(random, 2048)
+	decryptionKey, err := rsa.GenerateKey(random, 4096)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate decryption key: %w", err)
 	}
