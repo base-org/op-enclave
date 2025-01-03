@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ResolvingProxyFactory} from "./ResolvingProxyFactory.sol";
 import {Portal} from "./Portal.sol";
 import {OutputOracle} from "./OutputOracle.sol";
@@ -21,7 +22,7 @@ import {Hashing} from "@eth-optimism-bedrock/src/libraries/Hashing.sol";
 import {Types} from "@eth-optimism-bedrock/src/libraries/Types.sol";
 import {Constants} from "@eth-optimism-bedrock/src/libraries/Constants.sol";
 
-contract DeployChain {
+contract DeployChain is Ownable {
     struct DeployAddresses {
         address l2OutputOracle;
         address systemConfig;
@@ -122,7 +123,7 @@ contract DeployChain {
         GasConfiguration memory gasConfig,
         AddressConfiguration memory addressConfig,
         bool proofsEnabled
-    ) external {
+    ) external onlyOwner {
         DeployAddresses memory addresses = setupProxies(chainID);
 
         Hashes memory hashes = calculateHashes(chainID, genesisConfig, gasConfig, addressConfig.batcher, addresses);
@@ -158,7 +159,7 @@ contract DeployChain {
         });
     }
 
-    function deployProxy(address proxy, bytes32 salt) public returns (address) {
+    function deployProxy(address proxy, bytes32 salt) internal returns (address) {
         return ResolvingProxyFactory.setupProxy(proxy, proxyAdmin, salt);
     }
 
