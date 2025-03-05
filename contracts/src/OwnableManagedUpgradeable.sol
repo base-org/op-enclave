@@ -6,7 +6,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 /**
- * @dev Extension of OpenZepplin's OwnableUpgradeable contract that adds an additional manager role.
+ * @dev Extension of OpenZeppelin's OwnableUpgradeable contract that adds an additional manager role.
  */
 abstract contract OwnableManagedUpgradeable is Initializable, ContextUpgradeable {
     address private _owner;
